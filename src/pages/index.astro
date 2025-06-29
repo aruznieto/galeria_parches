@@ -18,9 +18,24 @@ const images: { name: string; img: string }[] = await resp.json();
     <meta charset="UTF-8" />
     <title>Mi colección de parches</title>
   </head>
-  <body class="bg-gray-50 text-gray-800">
+
+  <!-- Aplicamos el fieltro al body -->
+  <body
+    class="bg-[url('https://www.transparenttextures.com/patterns/felt.png')]
+      bg-repeat
+      bg-blend-overlay
+      text-gray-800"
+  >
     <main class="max-w-6xl mx-auto p-6">
-      <h1 class="text-3xl font-bold mb-6 text-center">
+      <h1
+        class="text-5xl sm:text-6xl
+        font-extrabold
+        bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500
+        bg-clip-text text-transparent
+        drop-shadow-lg
+        mb-6
+        text-center"
+      >
         Mi colección de parches
       </h1>
 
@@ -55,10 +70,13 @@ const images: { name: string; img: string }[] = await resp.json();
       </div>
     </main>
 
-    <!-- Modal -->
+    <!-- Modal ligero, sin patrón (se apreciará el fondo de body) -->
     <div
       id="gallery-modal"
-      class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 ease-out z-50"
+      class="fixed inset-0
+        bg-black/50 /* semitransparente para destacar el modal */
+        flex items-center justify-center p-4
+        hidden opacity-0 transition-opacity duration-300 ease-out z-50"
     >
       <div
         id="modal-content"
@@ -80,7 +98,6 @@ const images: { name: string; img: string }[] = await resp.json();
       </div>
     </div>
 
-    <!-- JS para el modal con transiciones -->
     <script type="module">
       const modal = document.getElementById("gallery-modal");
       const modalContent = document.getElementById("modal-content");
@@ -90,25 +107,19 @@ const images: { name: string; img: string }[] = await resp.json();
       function openModal(src, alt) {
         modalImg.src = src;
         modalImg.alt = alt;
-        // Mostrar
         modal.classList.remove("hidden");
-        // Forzar reflow para que la transición funcione
         void modal.offsetWidth;
         modal.classList.remove("opacity-0");
         modal.classList.add("opacity-100");
-        // Zoom in
         modalContent.classList.remove("scale-95");
         modalContent.classList.add("scale-100");
       }
 
       function closeModal() {
-        // Fade out
         modal.classList.remove("opacity-100");
         modal.classList.add("opacity-0");
-        // Zoom out
         modalContent.classList.remove("scale-100");
         modalContent.classList.add("scale-95");
-        // Al terminar la transición, ocultar completamente
         modal.addEventListener(
           "transitionend",
           () => {
@@ -119,7 +130,6 @@ const images: { name: string; img: string }[] = await resp.json();
         );
       }
 
-      // Mostrar modal al click
       document.querySelectorAll(".open-modal").forEach((btn) => {
         btn.addEventListener("click", () => {
           const src = btn.getAttribute("data-src");
@@ -128,10 +138,7 @@ const images: { name: string; img: string }[] = await resp.json();
         });
       });
 
-      // Cerrar modal al click en la X
       closeBtn.addEventListener("click", closeModal);
-
-      // Cerrar al click fuera del contenido
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeModal();
       });
