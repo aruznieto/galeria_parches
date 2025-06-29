@@ -59,7 +59,7 @@ const images: { name: string; img: string }[] = await resp.json();
                       width={300}
                       height={300}
                       loading="lazy"
-                      class="w-full h-full object-cover transition-transform hover:scale-105"
+                      class="w-full h-full object-cover transition-transform hover:scale-105 cursor-pointer"
                     />
                   </div>
                 </button>
@@ -84,7 +84,7 @@ const images: { name: string; img: string }[] = await resp.json();
       >
         <button
           id="modal-close"
-          class="absolute top-2 right-2 text-white text-3xl leading-none focus:outline-none"
+          class="absolute top-2 right-2 text-white text-3xl leading-none focus:outline-none cursor-pointer"
           aria-label="Cerrar"
         >
           &times;
