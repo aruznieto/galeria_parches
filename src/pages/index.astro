@@ -1,16 +1,140 @@
 ---
+import "../styles/global.css";
+import { Image } from "astro:assets";
 
+const jsonUrl = "https://cdn.anrn.dev/parches/parches.json";
+const baseUrl = "https://cdn.anrn.dev/parches/";
+
+const resp = await fetch(jsonUrl);
+if (!resp.ok) {
+  throw new Error(`No se pudo cargar el JSON: ${resp.status}`);
+}
+
+const images: { name: string; img: string }[] = await resp.json();
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mi colección de parches</title>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <main class="max-w-6xl mx-auto p-6">
+      <h1 class="text-3xl font-bold mb-6 text-center">
+        Mi colección de parches
+      </h1>
+
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      >
+        {
+          images.map(({ name, img }) => {
+            const fullUrl = `${baseUrl}${img}`;
+            return (
+              <figure class="overflow-hidden rounded-xl shadow-lg">
+                <button
+                  class="open-modal block w-full h-full p-0 m-0"
+                  data-src={fullUrl}
+                  aria-label={`Ver grande ${name}`}
+                >
+                  <div class="w-full aspect-square overflow-hidden">
+                    <Image
+                      src={fullUrl}
+                      alt={name}
+                      width={300}
+                      height={300}
+                      loading="lazy"
+                      class="w-full h-full object-cover transition-transform hover:scale-105"
+                    />
+                  </div>
+                </button>
+              </figure>
+            );
+          })
+        }
+      </div>
+    </main>
+
+    <!-- Modal -->
+    <div
+      id="gallery-modal"
+      class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300 ease-out z-50"
+    >
+      <div
+        id="modal-content"
+        class="relative max-w-full max-h-full transform scale-95 transition-transform duration-300 ease-out"
+      >
+        <button
+          id="modal-close"
+          class="absolute top-2 right-2 text-white text-3xl leading-none focus:outline-none"
+          aria-label="Cerrar"
+        >
+          &times;
+        </button>
+        <img
+          id="modal-image"
+          src=""
+          alt=""
+          class="max-w-full max-h-[90vh] rounded-lg shadow-lg"
+        />
+      </div>
+    </div>
+
+    <!-- JS para el modal con transiciones -->
+    <script type="module" client:load>
+      const modal = document.getElementById("gallery-modal");
+      const modalContent = document.getElementById("modal-content");
+      const modalImg = document.getElementById("modal-image");
+      const closeBtn = document.getElementById("modal-close");
+
+      function openModal(src, alt) {
+        modalImg.src = src;
+        modalImg.alt = alt;
+        // Mostrar
+        modal.classList.remove("hidden");
+        // Forzar reflow para que la transición funcione
+        void modal.offsetWidth;
+        modal.classList.remove("opacity-0");
+        modal.classList.add("opacity-100");
+        // Zoom in
+        modalContent.classList.remove("scale-95");
+        modalContent.classList.add("scale-100");
+      }
+
+      function closeModal() {
+        // Fade out
+        modal.classList.remove("opacity-100");
+        modal.classList.add("opacity-0");
+        // Zoom out
+        modalContent.classList.remove("scale-100");
+        modalContent.classList.add("scale-95");
+        // Al terminar la transición, ocultar completamente
+        modal.addEventListener(
+          "transitionend",
+          () => {
+            modal.classList.add("hidden");
+            modalImg.src = "";
+          },
+          { once: true }
+        );
+      }
+
+      // Mostrar modal al click
+      document.querySelectorAll(".open-modal").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const src = btn.getAttribute("data-src");
+          const alt = btn.querySelector("img")?.getAttribute("alt") || "";
+          openModal(src, alt);
+        });
+      });
+
+      // Cerrar modal al click en la X
+      closeBtn.addEventListener("click", closeModal);
+
+      // Cerrar al click fuera del contenido
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+    </script>
+  </body>
 </html>
