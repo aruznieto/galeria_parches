@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { motion } from "framer-motion";
 import "./styles.css";
 
 const CDN_URL = "https://cdn.anrn.dev/parches/";
@@ -212,9 +211,9 @@ function App() {
         <div className="board-corner board-corner--bl" />
         <div className="board-corner board-corner--br" />
 
-        {items.map((item) => {
+        {items.map((item, index) => {
           return (
-            <motion.img
+            <img
               key={item.id}
               src={item.src}
               alt={item.name}
@@ -224,27 +223,12 @@ function App() {
                 top: item.y,
                 width: item.w,
                 height: item.h,
-                rotate: item.rotation,
+                "--rotation": `${item.rotation}deg`,
               }}
               onClick={() => setSelectedPatch(item)}
-              whileHover={{
-                scale: 1.08,
-                rotate: item.rotation + 2,
-              }}
-              whileTap={{
-                scale: 1.14,
-                rotate: item.rotation - 3,
-              }}
-              animate={{
-                x: 0,
-                y: 0,
-                scale: 1,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 420,
-                damping: 28,
-              }}
+              loading={index < 8 ? "eager" : "lazy"}
+              fetchPriority={index < 4 ? "high" : "auto"}
+              decoding="async"
               draggable={false}
               onError={(event) => {
                 event.currentTarget.src = `https://placehold.co/120x120/111/fff?text=${encodeURIComponent(

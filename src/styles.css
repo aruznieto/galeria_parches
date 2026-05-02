@@ -103,7 +103,11 @@ button:hover {
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
-  will-change: transform, filter;
+  transform: rotate(var(--rotation));
+  transition:
+    transform 160ms ease,
+    filter 160ms ease;
+  will-change: transform;
   filter:
     drop-shadow(0 3px 2px rgba(0,0,0,0.22))
     drop-shadow(0 8px 8px rgba(0,0,0,0.16));
@@ -111,9 +115,14 @@ button:hover {
 
 .patch:hover {
   z-index: 10;
+  transform: rotate(calc(var(--rotation) + 2deg)) scale(1.08);
   filter:
     drop-shadow(0 6px 4px rgba(0,0,0,0.24))
     drop-shadow(0 14px 15px rgba(0,0,0,0.22));
+}
+
+.patch:active {
+  transform: rotate(calc(var(--rotation) - 3deg)) scale(1.14);
 }
 
 .lightbox {
