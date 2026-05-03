@@ -1,12 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import localPatches from "./parches.json";
 import "./styles.css";
 
 const CDN_URL = "https://cdn.anrn.dev/parches/";
-const PATCHES_JSON_URL = `${CDN_URL}parches.json`;
 
 /*
-  parches.json debe estar en el CDN y puede tener una de estas formas:
+  parches.json puede tener una de estas formas:
   ["aga.webp", "otro-parche.png"]
   { "parches": ["aga.webp", "otro-parche.png"] }
   [{ "name": "EZAPAC", "img": "ezapac.webp" }]
@@ -76,13 +76,7 @@ function normalizePatchFiles(data) {
 
 async function loadPatchFiles() {
   try {
-    const response = await fetch(PATCHES_JSON_URL);
-
-    if (!response.ok) {
-      throw new Error(`No se pudo cargar ${PATCHES_JSON_URL}`);
-    }
-
-    const files = normalizePatchFiles(await response.json());
+    const files = normalizePatchFiles(localPatches);
     return files.length > 0 ? shufflePatches(files) : FALLBACK_PATCHES;
   } catch (error) {
     console.error(error);
