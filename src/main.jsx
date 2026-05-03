@@ -26,8 +26,27 @@ const PATCH = {
   fillRatio: 0.88,
 };
 
+const MOBILE_BOARD = {
+  breakpoint: 700,
+  targetCellSize: 76,
+};
+
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
+}
+
+function shufflePatches(patches) {
+  const shuffled = [...patches];
+
+  for (let index = shuffled.length - 1; index > 0; index--) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[randomIndex]] = [
+      shuffled[randomIndex],
+      shuffled[index],
+    ];
+  }
+
+  return shuffled;
 }
 
 function normalizePatchFiles(data) {
@@ -64,7 +83,7 @@ async function loadPatchFiles() {
     }
 
     const files = normalizePatchFiles(await response.json());
-    return files.length > 0 ? files : FALLBACK_PATCHES;
+    return files.length > 0 ? shufflePatches(files) : FALLBACK_PATCHES;
   } catch (error) {
     console.error(error);
     return FALLBACK_PATCHES;
@@ -155,12 +174,30 @@ function generateInitialLayout(patches, boardSize) {
   });
 }
 
+function getMobileBoardMinHeight(count, boardWidth) {
+  if (!boardWidth || count === 0) return null;
+
+  const innerWidth = Math.max(1, boardWidth - BOARD_PADDING * 2);
+  const columns = Math.max(
+    2,
+    Math.floor(innerWidth / MOBILE_BOARD.targetCellSize)
+  );
+  const rows = Math.ceil(count / columns);
+
+  return BOARD_PADDING * 2 + rows * MOBILE_BOARD.targetCellSize;
+}
+
 function App() {
   const [patchFiles, setPatchFiles] = React.useState(FALLBACK_PATCHES);
   const [items, setItems] = React.useState([]);
   const [boardSize, setBoardSize] = React.useState(null);
   const [selectedPatch, setSelectedPatch] = React.useState(null);
   const boardRef = React.useRef(null);
+  const mobileBoardMinHeight = React.useMemo(() => {
+    if (!boardSize || boardSize.width > MOBILE_BOARD.breakpoint) return null;
+
+    return getMobileBoardMinHeight(patchFiles.length, boardSize.width);
+  }, [boardSize, patchFiles.length]);
 
   React.useEffect(() => {
     let isActive = true;
@@ -205,7 +242,15 @@ function App() {
 
   return (
     <main className="page">
-      <section ref={boardRef} className="board">
+      <section
+        ref={boardRef}
+        className="board"
+        style={
+          mobileBoardMinHeight
+            ? { "--mobile-board-min-height": `${mobileBoardMinHeight}px` }
+            : undefined
+        }
+      >
         <div className="board-corner board-corner--tl" />
         <div className="board-corner board-corner--tr" />
         <div className="board-corner board-corner--bl" />
