@@ -76,7 +76,8 @@ function normalizePatchFiles(data) {
 
 async function loadPatchFiles() {
   try {
-    const response = await fetch(PATCHES_JSON_URL);
+    const manifestUrl = `${PATCHES_JSON_URL}?v=${Date.now()}`;
+    const response = await fetch(manifestUrl, { cache: "no-store" });
 
     if (!response.ok) {
       throw new Error(`No se pudo cargar ${PATCHES_JSON_URL}`);
