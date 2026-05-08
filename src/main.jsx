@@ -14,8 +14,8 @@ const PATCHES_JSON_URL = `${CDN_URL}parches.json`;
 
 const FALLBACK_PATCHES = [
   {
-    name: "aga",
-    img: "aga.webp",
+    name: "CIBERESPACIO IV PROMOCION",
+    img: "cbeiv.webp",
   },
 ];
 
